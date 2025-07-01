@@ -1,12 +1,15 @@
-import { useState } from "react"
-import styles from "./App.module.css"
-import Chat from "./components/Chat/Chat"
+import React from "react"
+import "./App.css"
+import Chat from "./components/Chart/Chat"
+import { ChatProvider } from "./context/ChartContext"
 
 function App() {
   return (
-    <div className={styles.app}>
-      <Chat />
-    </div>
+    <ChatProvider>
+      <div className="app">
+        <Chat />
+      </div>
+    </ChatProvider>
   )
 }
 

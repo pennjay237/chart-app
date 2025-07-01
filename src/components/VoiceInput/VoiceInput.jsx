@@ -1,23 +1,43 @@
-import { useState } from "react"
-import Recorder from "mic-recorder-to-mp3"
-import { transcribeAudio } from "../../utils/transcribeAudio"
+// src/components/Chat/VoiceInput/VoiceInput.jsx
+import React, { useState, useEffect } from "react"
 import styles from "./VoiceInput.module.css"
 
-const recorder = new Recorder({ bitRate: 128 })
+function VoiceInput({ onTranscribe }) {
+  const [mediaRecorder, setMediaRecorder] = useState(null)
+  const [isRecording, setIsRecording] = useState(false)
+  const [chunks, setChunks] = useState([])
 
-export default function VoiceInput({ onTranscribe }) {
-  const [recording, setRecording] = useState(false)
+  useEffect(() => {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      const recorder = new MediaRecorder(stream)
+      recorder.ondataavailable = (e) => setChunks((prev) => [...prev, e.data])
+      recorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: "audio/webm" })
+        const file = new File([blob], "recording.webm")
+        setChunks([])
+        onTranscribe && onTranscribe(file)
+      }
+      setMediaRecorder(recorder)
+    })
+  }, [])
 
-  const toggleRecord = async () => {
-    if (!recording) {
-      setRecording(true)
-      recorder.start()
+  const toggleRecording = () => {
+    if (isRecording) {
+      mediaRecorder?.stop()
     } else {
-      const [buffer, blob] = await recorder.stop().getMp3()
-      setRecording(false)
-      onTranscribe(blob)
+      setChunks([])
+      mediaRecorder?.start()
     }
+    setIsRecording(!isRecording)
   }
 
-  return <button onClick={toggleRecord}>{recording ? "Stop" : "🎤"}</button>
+  return (
+    <div className={styles.voiceInput}>
+      <button onClick={toggleRecording}>
+        {isRecording ? "Stop" : "Record Voice"}
+      </button>
+    </div>
+  )
 }
+
+export default VoiceInput

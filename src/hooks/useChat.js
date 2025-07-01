@@ -1,28 +1,46 @@
-import { useState } from "react"
-import { deepseekRequest } from "../utils/deepseekClient"
+// src/hooks/useChat.js
+import { useChatContext } from "../context/ChartContext"
+import { useState, useCallback } from "react"
+import { sendMessageToDeepSeek } from "../utils/deepseekClient"
 
 export function useChat() {
-  const [messages, setMessages] = useState([])
+  const { state, dispatch } = useChatContext()
+  const [error, setError] = useState(null)
 
-  const sendMessage = async (text) => {
-    const newMessages = [...messages, { role: "user", content: text }]
-    setMessages(newMessages)
+  const sendMessage = useCallback(
+    async (message) => {
+      dispatch({ type: "SET_LOADING", payload: true })
+      try {
+        // Add user message to chat
+        dispatch({
+          type: "ADD_MESSAGE",
+          payload: { sender: "user", text: message, id: Date.now() },
+        })
 
-    const response = await deepseekRequest(newMessages)
-    setMessages([...newMessages, { role: "assistant", content: response }])
-  }
+        // Send message to DeepSeek API
+        const response = await sendMessageToDeepSeek(message, state.conversationId)
 
-  const startNewConversation = () => setMessages([])
+        // Add bot response to chat
+        dispatch({
+          type: "ADD_MESSAGE",
+          payload: { sender: "bot", text: response.answer, id: Date.now() + 1 },
+        })
 
-  const addFile = (file) => {
-    // optionally implement file reading and embedding handling
-    console.log("File uploaded", file)
-  }
+        if (!state.conversationId && response.conversationId) {
+          dispatch({ type: "SET_CONVERSATION_ID", payload: response.conversationId })
+        }
+      } catch (e) {
+        setError(e.message)
+      } finally {
+        dispatch({ type: "SET_LOADING", payload: false })
+      }
+    },
+    [dispatch, state.conversationId]
+  )
 
-  const transcribeAndSend = async (blob) => {
-    const text = await import("../utils/transcribeAudio").then(mod => mod.transcribeAudio(blob))
-    sendMessage(text)
-  }
+  const clearConversation = useCallback(() => {
+    dispatch({ type: "CLEAR_CONVERSATION" })
+  }, [dispatch])
 
-  return { messages, sendMessage, startNewConversation, addFile, transcribeAndSend }
+  return { state, sendMessage, clearConversation, error }
 }
