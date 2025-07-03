@@ -17,7 +17,6 @@ export function useChat() {
           payload: { sender: "user", text: message, id: Date.now() },
         })
 
-        // Send message to DeepSeek API
         const response = await sendMessageToDeepSeek(message, state.conversationId)
 
         // Add bot response to chat

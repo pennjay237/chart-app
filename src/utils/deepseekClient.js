@@ -1,30 +1,34 @@
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
+const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
-const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
-
-// Log API key presence for debugging (avoid printing full key in production)
-if (!DEEPSEEK_API_KEY) {
-  console.warn(" DeepSeek API key is missing. Please set VITE_DEEPSEEK_API_KEY in your .env file.");
+if (!OPENROUTER_API_KEY) {
+  console.warn("OpenRouter API key is missing. Please set VITE_OPENROUTER_API_KEY in your .env file.");
 } else {
-  console.log(" DeepSeek API key detected.");
+  console.log("OpenRouter API key detected.");
 }
 
+/**
+ * Send message to DeepSeek model via OpenRouter API
+ * @param {string} message
+ * @param {string|null} conversationId
+ * @returns {Object}
+ */
 export async function sendMessageToDeepSeek(message, conversationId = null) {
-  if (!DEEPSEEK_API_KEY) {
-    throw new Error("DeepSeek API key is missing. Please set VITE_DEEPSEEK_API_KEY in your .env file.");
+  if (!OPENROUTER_API_KEY) {
+    throw new Error("OpenRouter API key is missing. Please set VITE_OPENROUTER_API_KEY in your .env file.");
   }
 
   const body = {
-    model: "gpt-4o-mini",
+    model: "deepseek/deepseek-r1-0528:free", 
     messages: [{ role: "user", content: message }],
     ...(conversationId && { conversation_id: conversationId }),
   };
 
   try {
-    const response = await fetch(DEEPSEEK_API_URL, {
+    const response = await fetch(OPENROUTER_API_URL, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -33,7 +37,7 @@ export async function sendMessageToDeepSeek(message, conversationId = null) {
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({}));
       throw new Error(
-        errorBody.error?.message || `DeepSeek API error: ${response.status} ${response.statusText}`
+        errorBody.error?.message || `OpenRouter API error: ${response.status} ${response.statusText}`
       );
     }
 
@@ -44,7 +48,7 @@ export async function sendMessageToDeepSeek(message, conversationId = null) {
       conversationId: data.conversation_id ?? conversationId,
     };
   } catch (error) {
-    console.error(" Failed to fetch from DeepSeek API:", error);
+    console.error("Failed to fetch from OpenRouter API:", error);
     throw error;
   }
 }
