@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from "./MainChat.module.css";
-import { FaMicrophone, FaStop, FaPaperPlane } from "react-icons/fa";
+import { FaMicrophone, FaStop, FaPaperPlane, FaPaperclip } from "react-icons/fa";
 import { useChat } from "../../hooks/useChat";
 import {
   uploadAudioFile,
@@ -24,7 +24,7 @@ function MessageList({ messages, loading }) {
   );
 }
 
-function MessageInput({ onSend, loading, onVoiceInput }) {
+function MessageInput({ onSend, loading, onVoiceInput, onFileUpload }) {
   const [message, setMessage] = useState("");
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
@@ -65,43 +65,50 @@ function MessageInput({ onSend, loading, onVoiceInput }) {
     }
   };
 
-  return (
-    <form onSubmit={handleSubmit} className={styles.messageInput}>
-      <input
-        type="text"
-        placeholder="Type your message..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        disabled={loading}
-        className={styles.input}
-      />
-      {message.trim() ? (
-        <button type="submit" disabled={loading} className={styles.button}>
-          <FaPaperPlane />
-        </button>
-      ) : recording ? (
-        <button type="button" onClick={stopRecording} disabled={loading} className={styles.button}>
-          <FaStop />
-        </button>
-      ) : (
-        <button type="button" onClick={startRecording} disabled={loading} className={styles.button}>
-          <FaMicrophone />
-        </button>
-      )}
-    </form>
-  );
-}
-
-function FileUploader({ onFileUpload, uploading }) {
-  const handleChange = (e) => {
+  const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (file) onFileUpload(file);
   };
 
   return (
-    <div className={styles.uploader}>
-      <input type="file" accept="audio/*" onChange={handleChange} disabled={uploading} />
-    </div>
+    <form onSubmit={handleSubmit} className={styles.messageInputWrapper}>
+      <div className={styles.fileUploadWrapper}>
+        <label className={styles.fileLabel}>
+          <FaPaperclip />
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={handleFileChange}
+            disabled={loading}
+            className={styles.fileInput}
+          />
+        </label>
+      </div>
+
+      <div className={styles.messageInput}>
+        <input
+          type="text"
+          placeholder="Type your message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          disabled={loading}
+          className={styles.input}
+        />
+        {message.trim() ? (
+          <button type="submit" disabled={loading} className={styles.button}>
+            <FaPaperPlane />
+          </button>
+        ) : recording ? (
+          <button type="button" onClick={stopRecording} disabled={loading} className={styles.button}>
+            <FaStop />
+          </button>
+        ) : (
+          <button type="button" onClick={startRecording} disabled={loading} className={styles.button}>
+            <FaMicrophone />
+          </button>
+        )}
+      </div>
+    </form>
   );
 }
 
@@ -135,8 +142,12 @@ function MainChat() {
       </div>
 
       <MessageList messages={state.messages} loading={isLoading} />
-      <FileUploader onFileUpload={handleFileUpload} uploading={isLoading} />
-      <MessageInput onSend={sendMessage} loading={isLoading} onVoiceInput={handleVoiceTranscription} />
+      <MessageInput
+        onSend={sendMessage}
+        loading={isLoading}
+        onVoiceInput={handleVoiceTranscription}
+        onFileUpload={handleFileUpload}
+      />
       {error && <div className={styles.error}>{error}</div>}
     </div>
   );

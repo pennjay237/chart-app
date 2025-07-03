@@ -135,16 +135,44 @@
 }
 
 
-/* .micButton {
-  background: transparent;
-  border: none;
-  font-size: 1.5rem;
-  color: #555;
-  cursor: pointer;
+
+.messageInputWrapper {
+  display: flex;
+  align-items: center;
   padding: 0.5rem;
 }
 
-.micButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-} */
+.fileUploadWrapper {
+  margin-right: 0.5rem;
+}
+
+.fileLabel {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+}
+
+.fileInput {
+  display: none;
+}
+
+.messageInput {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+
+.input {
+  flex: 1;
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
+.button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  margin-left: 0.5rem;
+  cursor: pointer;
+}
