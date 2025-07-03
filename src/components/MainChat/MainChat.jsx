@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from "./MainChat.module.css";
+import { FaMicrophone, FaStop, FaPaperPlane } from "react-icons/fa"; // <-- Updated line
 import { useChat } from "../../hooks/useChat";
 import {
   uploadAudioFile,
@@ -45,7 +46,7 @@ function MessageInput({ onSend, loading }) {
         className={styles.input}
       />
       <button type="submit" disabled={loading || !message.trim()} className={styles.button}>
-        Send
+        <FaPaperPlane />
       </button>
     </form>
   );
@@ -99,9 +100,13 @@ function VoiceInput({ onSend, loading }) {
   return (
     <div className={styles.voiceInput}>
       {recording ? (
-        <button onClick={stopRecording} disabled={loading}>Stop Recording</button>
+        <button onClick={stopRecording} disabled={loading} className={styles.micButton}>
+          <FaStop />
+        </button>
       ) : (
-        <button onClick={startRecording} disabled={loading}>Start Recording</button>
+        <button onClick={startRecording} disabled={loading} className={styles.micButton}>
+          <FaMicrophone />
+        </button>
       )}
     </div>
   );
