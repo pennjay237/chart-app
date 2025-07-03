@@ -119,8 +119,17 @@ function MainChat() {
   const handleFileUpload = async (file) => {
     try {
       const uploadUrl = await uploadAudioFile(file);
-      const transcriptId = await transcribeAudio(uploadUrl);
-      const transcriptText = await getTranscriptionResult(transcriptId);
+      const transcriptId = await transcribeAudio(uploadUrl, {
+        headers: {
+          authorization: process.env.REACT_APP_TRANSCRIBE_API_KEY, // Ensure this env var is set
+          "content-type": "application/json",
+        },
+      });
+      const transcriptText = await getTranscriptionResult(transcriptId, {
+        headers: {
+          authorization: process.env.REACT_APP_TRANSCRIBE_API_KEY,
+        },
+      });
       await sendMessage(transcriptText);
     } catch (err) {
       console.error("Audio file error:", err);
