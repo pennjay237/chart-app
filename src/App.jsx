@@ -14,3 +14,18 @@ function App() {
 }
 
 export default App
+
+
+
+
+
+
+
+
+
+
+
+// VITE_OPENROUTER_API_KEY=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
+// VITE_ASSEMBLYAI_API_KEY=c9a1874ab6374c17ac53fbbcff8c4f31c4f31
+
+
