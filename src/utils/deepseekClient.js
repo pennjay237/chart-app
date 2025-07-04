@@ -2,12 +2,12 @@
 const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-console.log("🔍 Loaded API Key:", OPENROUTER_API_KEY);
+console.log(" Loaded API Key:", OPENROUTER_API_KEY);
 
 if (!OPENROUTER_API_KEY) {
-  console.warn("⚠️ OpenRouter API key is missing. Check your .env file and restart the server.");
+  console.warn(" OpenRouter API key is missing. Check your .env file and restart the server.");
 } else {
-  console.log("✅ OpenRouter API key detected.");
+  console.log(" OpenRouter API key detected.");
 }
 
 /**
@@ -17,7 +17,7 @@ if (!OPENROUTER_API_KEY) {
  */
 export async function sendMessageToDeepSeek(message, conversationId = null) {
   if (!OPENROUTER_API_KEY) {
-    throw new Error("❌ OpenRouter API key is missing. Check your .env config.");
+    throw new Error(" OpenRouter API key is missing. Check your .env config.");
   }
 
   const body = {
@@ -51,7 +51,7 @@ export async function sendMessageToDeepSeek(message, conversationId = null) {
       conversationId: data.conversation_id ?? conversationId,
     };
   } catch (error) {
-    console.error("🚨 Failed to fetch from OpenRouter API:", error);
+    console.error(" Failed to fetch from OpenRouter API:", error);
     throw error;
   }
 }
